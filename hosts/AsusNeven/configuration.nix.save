@@ -1,0 +1,82 @@
+hardware.i2c.enable = true;
+boot.kernelModules = [ "i2c-dev" ];
+
+nixpkgs.config = {
+    allowUnfree = true;
+    # Tes autres options comme allowUnfreePredicate si tu en as
+  };
+
+services.asus-numberpad-driver = {
+    enable = true;
+    layout = "up5401ea";
+    wayland = true;
+    waylandDisplay = "wayland-1";
+    
+config = {
+  "activation_time" = "0.1";
+  "top_left_icon_activation_time" = "0.25";
+  "top_left_icon_brightness_func_max_min_only" = "0";
+  "enabled_touchpad_pointer" = "0";
+  "sys_numlock_enables_numpad" = "0";   # ← nouveau : ne plus activer le pavé quand NumLock s'active
+};
+  };
+
+    services.thermald.enable = true; 
+    services.power-profiles-daemon.enable = true; 
+    services.upower.enable = true; 
+
+    #Audio pipeware 
+    security.rtkit.enable = true; 
+    services.pipewire = {
+    enable = true; 
+    alsa.enable = true; 
+    alsa.support32Bit = true; 
+    pulse.enable = true; 
+    };
+
+    programs.niri.enable = true; 
+
+    services.displayManager.sddm = {
+      enable = true;
+      wayland.enable = true;
+    };
+
+    programs.zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestions.enable = true;
+      syntaxHighlighting.enable = true;
+    };
+
+    programs.starship = {
+      enable = true;
+      presets = ["pure-preset"];
+      settings = {
+        add_newline = false;
+        # Tu pourras customiser le style ici plus tard si tu veux
+      };
+    };
+
+    users.users.harpocrate = { 
+    isNormalUser = true; 
+    description = "Harpocrate"; 
+    extraGroups = ["networksmanager" "wheel" "video" "input"];
+    initialPassword = "nixos";
+    shell = pkgs.zsh;
+    packages = with pkgs; [
+    firefox
+    kitty
+    git
+    ];
+    };
+
+    environment.systemPackages = with pkgs; [
+    vim
+    wget
+    curl
+    wl-clipboard
+    ];
+
+    nix.settings.experimental-features = ["nix-command" "flakes"];
+    system.stateVersion = "24.05";
+}
